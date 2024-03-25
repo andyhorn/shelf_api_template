@@ -1,36 +1,39 @@
 import 'package:dotenv/dotenv.dart';
 
 final class AppConfig {
-  static AppConfig? _instance;
-  static AppConfig get instance {
-    _instance ??= AppConfig._(
-      DotEnv(
-        includePlatformEnvironment: true,
-      )..load(),
-    );
-    return _instance!;
+  static final instance = AppConfig._();
+
+  AppConfig._() {
+    final env = DotEnv(includePlatformEnvironment: true)..load();
+
+    dbName = env['DB_NAME']!;
+    dbHost = env['DB_HOST']!;
+    dbPort = int.parse(env['DB_PORT']!);
+    dbUser = env['DB_USER']!;
+    dbPassword = env['DB_PASSWORD']!;
   }
 
-  AppConfig._(this._env);
+  late final String dbName;
+  late final String dbHost;
+  late final int dbPort;
+  late final String dbUser;
+  late final String dbPassword;
 
-  final DotEnv _env;
-
-  late final SupabaseConfig supabase = SupabaseConfig._(env: _env);
+  SupabaseConfig get supabase => SupabaseConfig.instance;
 }
 
 final class SupabaseConfig {
-  const SupabaseConfig._({
-    required this.env,
-  });
+  static final instance = SupabaseConfig._();
 
-  final DotEnv env;
+  SupabaseConfig._() {
+    final env = DotEnv(includePlatformEnvironment: true)..load();
 
-  String get url => env['SUPABASE_URL']!;
-  String get jwtSecret => env['SUPABASE_JWT_SECRET']!;
-  String get serviceRoleKey => env['SUPABASE_SERVICE_ROLE_KEY']!;
-  String get dbName => env['SUPABASE_DB_NAME']!;
-  String get dbHost => env['SUPABASE_DB_HOST']!;
-  int get dbPort => int.parse(env['SUPABASE_DB_PORT']!);
-  String get dbUser => env['SUPABASE_DB_USER']!;
-  String get dbPassword => env['SUPABASE_DB_PASSWORD']!;
+    url = env['SUPABASE_URL']!;
+    jwtSecret = env['SUPABASE_JWT_SECRET']!;
+    serviceRoleKey = env['SUPABASE_SERVICE_ROLE_KEY']!;
+  }
+
+  late final String url;
+  late final String jwtSecret;
+  late final String serviceRoleKey;
 }

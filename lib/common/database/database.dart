@@ -13,11 +13,11 @@ final class Database {
 
   static Endpoint _getEndpoint() {
     return Endpoint(
-      database: AppConfig.instance.supabase.dbName,
-      host: AppConfig.instance.supabase.dbHost,
-      password: AppConfig.instance.supabase.dbPassword,
-      port: AppConfig.instance.supabase.dbPort,
-      username: AppConfig.instance.supabase.dbUser,
+      database: AppConfig.instance.dbName,
+      host: AppConfig.instance.dbHost,
+      password: AppConfig.instance.dbPassword,
+      port: AppConfig.instance.dbPort,
+      username: AppConfig.instance.dbUser,
     );
   }
 
