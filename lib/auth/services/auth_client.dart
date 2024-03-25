@@ -51,7 +51,7 @@ class AuthClient {
     }
   }
 
-  String validate(String token) {
+  Future<AppUser> validate(String token) async {
     final jwt = JWT.tryVerify(
       token,
       SecretKey(AppConfig.instance.supabase.jwtSecret),
@@ -61,7 +61,14 @@ class AuthClient {
       throw InvalidTokenError();
     }
 
-    return jwt.subject!;
+    final userId = jwt.subject!;
+    final user = await findById(userId);
+
+    if (user == null) {
+      throw InvalidTokenError();
+    }
+
+    return user;
   }
 
   Future<AppUser?> findById(String userId) async {

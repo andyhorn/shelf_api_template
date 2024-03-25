@@ -1,11 +1,8 @@
 import 'package:shelf/shelf.dart';
+import 'package:shelf_api/auth/models/app_user.dart';
 import 'package:shelf_api/auth/services/auth_client.dart';
 import 'package:shelf_api/common/errors/app_error.dart';
 import 'package:shelf_di/shelf_di.dart';
-
-typedef UserId = ({
-  String id,
-});
 
 final jwtMiddleware = createMiddleware(
   requestHandler: (request) async {
@@ -16,9 +13,9 @@ final jwtMiddleware = createMiddleware(
 
     final token = auth.split('Bearer ').last;
     final authClient = await request.get<AuthClient>();
-    final id = authClient.validate(token);
+    final user = await authClient.validate(token);
 
-    request.useValue<UserId>((id: id));
+    request.useValue<AppUser>(user);
 
     return null;
   },

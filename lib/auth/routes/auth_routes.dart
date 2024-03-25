@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:shelf/shelf.dart';
+import 'package:shelf_api/auth/models/app_user.dart';
 import 'package:shelf_api/auth/services/auth_client.dart';
 import 'package:shelf_api/common/errors/app_error.dart';
 import 'package:shelf_api/common/extensions/handler_ext.dart';
@@ -53,10 +54,8 @@ final class AuthRoutes {
   }
 
   FutureOr<Response> _whoami(Request request) async {
-    final authClient = await request.get<AuthClient>();
-    final userId = await request.get<UserId>();
+    final user = await request.get<AppUser>();
 
-    final user = await authClient.findById(userId.id);
     return Response.ok(jsonEncode(user));
   }
 
@@ -74,8 +73,8 @@ final class AuthRoutes {
 
   FutureOr<Response> _delete(Request request) async {
     final authClient = await request.get<AuthClient>();
-    final (:id) = await request.get<UserId>();
-    await authClient.deleteUser(id);
+    final user = await request.get<AppUser>();
+    await authClient.deleteUser(user.id);
 
     return Response(
       HttpStatus.noContent,

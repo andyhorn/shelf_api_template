@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:postgres/postgres.dart';
 import 'package:shelf/shelf.dart';
+import 'package:shelf_api/auth/models/app_user.dart';
 import 'package:shelf_api/common/middleware/jwt_middleware.dart';
 import 'package:shelf_api/todos/dtos/create_todo_dto.dart';
 import 'package:shelf_api/todos/services/todos_repository.dart';
@@ -29,25 +30,28 @@ class TodosRoutes {
   }
 
   FutureOr<Response> _get(Request request) async {
-    final UserId(:id) = await request.get<UserId>();
+    final user = await request.get<AppUser>();
     final todosRepository = await request.get<TodosRepository>();
 
-    final todos = await todosRepository.findByUserId(id);
+    final todos = await todosRepository.findByUserId(user.id);
     return Response.ok(jsonEncode(todos));
   }
 
   FutureOr<Response> _create(Request request) async {
-    final UserId(:id) = await request.get<UserId>();
+    final user = await request.get<AppUser>();
     final body = await request.readAsString();
     final dto = CreateTodoDto.fromJson(jsonDecode(body));
     final todosRepository = await request.get<TodosRepository>();
-    final todo = await todosRepository.create((title: dto.title, userId: id));
+    final todo = await todosRepository.create((
+      title: dto.title,
+      userId: user.id,
+    ));
 
     return Response.ok(jsonEncode(todo));
   }
 
   FutureOr<Response> _update(Request request, String id) async {
-    final UserId(id: userId) = await request.get<UserId>();
+    final user = await request.get<AppUser>();
     final body = await request.readAsString();
     final dto = UpdateTodoDto.fromJson(jsonDecode(body));
     final todosRepository = await request.get<TodosRepository>();
@@ -55,7 +59,7 @@ class TodosRoutes {
       completed: dto.completed,
       title: dto.title,
       todoId: id,
-      userId: userId,
+      userId: user.id,
     ));
 
     if (todo == null) {
