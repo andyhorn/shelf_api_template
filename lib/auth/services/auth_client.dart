@@ -1,7 +1,7 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:shelf_api/auth/extensions/auth_exception_extensions.dart';
 import 'package:shelf_api/auth/extensions/sign_up_args_extensions.dart';
-import 'package:shelf_api/auth/models/app_auth_response.dart';
+import 'package:shelf_api/auth/models/auth_tokens.dart';
 import 'package:shelf_api/auth/models/app_user.dart';
 import 'package:shelf_api/auth/models/sign_in_args.dart';
 import 'package:shelf_api/auth/models/sign_up_args.dart';
@@ -13,7 +13,7 @@ class AuthClient {
   const AuthClient(this._supabase);
   final SupabaseClient _supabase;
 
-  Future<AppAuthResponse> signUp(SignUpArgs args) async {
+  Future<AuthTokens> signUp(SignUpArgs args) async {
     try {
       final response = await _supabase.auth.admin.createUser(
         args.toAdminUserAttributes(),
@@ -30,7 +30,7 @@ class AuthClient {
     }
   }
 
-  Future<AppAuthResponse> signIn(SignInArgs args) async {
+  Future<AuthTokens> signIn(SignInArgs args) async {
     try {
       final response = await _supabase.auth.signInWithPassword(
         email: args.email,
@@ -42,7 +42,7 @@ class AuthClient {
         throw LoginError();
       }
 
-      return AppAuthResponse(
+      return AuthTokens(
         accessToken: session.accessToken,
         refreshToken: session.refreshToken!,
       );
@@ -84,7 +84,7 @@ class AuthClient {
     );
   }
 
-  Future<AppAuthResponse> refresh(String refreshToken) async {
+  Future<AuthTokens> refresh(String refreshToken) async {
     try {
       final response = await _supabase.auth
           .setSession(refreshToken)
@@ -96,7 +96,7 @@ class AuthClient {
         throw InvalidRefreshTokenError();
       }
 
-      return AppAuthResponse(
+      return AuthTokens(
         accessToken: session.accessToken,
         refreshToken: session.refreshToken!,
       );
