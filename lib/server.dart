@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:shelf/shelf.dart';
 import 'package:shelf_api/auth/services/auth_client.dart';
 import 'package:shelf_api/common/middleware/global_error_handler_middleware.dart';
@@ -25,11 +27,16 @@ class Server {
   }
 
   Future<void> run({
-    int port = 3000,
+    required int? port,
+    required Object? internetAddress,
   }) async {
-    await io.serve(_handler, '0.0.0.0', port).then((server) {
-      print('🚀 Listening to http://${server.address.host}:${server.port}');
-    });
+    final server = await io.serve(
+      _handler,
+      internetAddress ?? InternetAddress.anyIPv4,
+      port ?? 3000,
+    );
+
+    print('🚀 Listening to http://${server.address.host}:${server.port}');
   }
 
   Handler _injectGlobalMiddleware(Router router) {
