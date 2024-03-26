@@ -1,16 +1,42 @@
 import 'package:dotenv/dotenv.dart';
 
-final class AppConfig {
-  static final instance = AppConfig._();
+class MissingConfigValueError extends Error {
+  MissingConfigValueError(this.key);
+
+  final String key;
+
+  @override
+  String toString() => 'Missing config value for key: $key';
+}
+
+mixin ConfigExtractor {
+  String getString(DotEnv env, String key) {
+    return env.getOrElse(key, () => throw MissingConfigValueError(key));
+  }
+
+  int getInt(DotEnv env, String key) {
+    return int.parse(getString(env, key));
+  }
+}
+
+final class AppConfig with ConfigExtractor {
+  static AppConfig? _instance;
+
+  factory AppConfig() {
+    _instance ??= AppConfig._();
+    return _instance!;
+  }
 
   AppConfig._() {
     final env = DotEnv(includePlatformEnvironment: true)..load();
 
-    dbName = env['DB_NAME']!;
-    dbHost = env['DB_HOST']!;
-    dbPort = int.parse(env['DB_PORT']!);
-    dbUser = env['DB_USER']!;
-    dbPassword = env['DB_PASSWORD']!;
+    dbName = getString(env, 'DB_NAME');
+    dbHost = getString(env, 'DB_HOST');
+    dbPort = getInt(env, 'DB_PORT');
+    dbUser = getString(env, 'DB_USER');
+    dbPassword = getString(env, 'DB_PASSWORD');
+
+    supabase = SupabaseConfig(env);
   }
 
   late final String dbName;
@@ -19,18 +45,21 @@ final class AppConfig {
   late final String dbUser;
   late final String dbPassword;
 
-  SupabaseConfig get supabase => SupabaseConfig.instance;
+  late final SupabaseConfig supabase;
 }
 
-final class SupabaseConfig {
-  static final instance = SupabaseConfig._();
+final class SupabaseConfig with ConfigExtractor {
+  static SupabaseConfig? _instance;
 
-  SupabaseConfig._() {
-    final env = DotEnv(includePlatformEnvironment: true)..load();
+  factory SupabaseConfig(DotEnv env) {
+    _instance ??= SupabaseConfig._(env);
+    return _instance!;
+  }
 
-    url = env['SUPABASE_URL']!;
-    jwtSecret = env['SUPABASE_JWT_SECRET']!;
-    serviceRoleKey = env['SUPABASE_SERVICE_ROLE_KEY']!;
+  SupabaseConfig._(DotEnv env) {
+    url = getString(env, 'SUPABASE_URL');
+    jwtSecret = getString(env, 'SUPABASE_JWT_SECRET');
+    serviceRoleKey = getString(env, 'SUPABASE_SERVICE_ROLE_KEY');
   }
 
   late final String url;
