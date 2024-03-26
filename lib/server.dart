@@ -1,4 +1,3 @@
-import 'package:postgres/postgres.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_api/auth/services/auth_client.dart';
 import 'package:shelf_api/common/middleware/global_error_handler_middleware.dart';
@@ -6,7 +5,6 @@ import 'package:shelf_api/common/config/app_config.dart';
 import 'package:shelf_api/common/database/database.dart';
 import 'package:shelf_api/auth/routes/auth_routes.dart';
 import 'package:shelf_api/todos/routes/todos_routes.dart';
-import 'package:shelf_api/todos/services/todos_repository.dart';
 import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 import 'package:shelf_di/shelf_di.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -52,11 +50,6 @@ class Server {
           final client = await request.get<SupabaseClient>();
           final authClient = AuthClient(client);
           return authClient;
-        }))
-        .addMiddleware(useFactory((request) async {
-          final db = await request.get<Connection>();
-          final todosRepository = TodosRepository(db);
-          return todosRepository;
         }))
         .addHandler(router.call)
         .call;
