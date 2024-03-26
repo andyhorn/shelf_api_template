@@ -1,7 +1,7 @@
 import 'package:dotenv/dotenv.dart';
 
-class MissingConfigValueError extends Error {
-  MissingConfigValueError(this.key);
+class _MissingConfigValueError extends Error {
+  _MissingConfigValueError(this.key);
 
   final String key;
 
@@ -9,9 +9,9 @@ class MissingConfigValueError extends Error {
   String toString() => 'Missing config value for key: $key';
 }
 
-mixin ConfigExtractor {
+mixin _ConfigExtractor {
   String getString(DotEnv env, String key) {
-    return env.getOrElse(key, () => throw MissingConfigValueError(key));
+    return env.getOrElse(key, () => throw _MissingConfigValueError(key));
   }
 
   int getInt(DotEnv env, String key) {
@@ -19,15 +19,15 @@ mixin ConfigExtractor {
   }
 }
 
-final class AppConfig with ConfigExtractor {
+final class AppConfig with _ConfigExtractor {
   static AppConfig? _instance;
 
   factory AppConfig() {
-    _instance ??= AppConfig._();
+    _instance ??= AppConfig.init();
     return _instance!;
   }
 
-  AppConfig._() {
+  AppConfig.init() {
     final env = DotEnv(includePlatformEnvironment: true)..load();
 
     dbName = getString(env, 'DB_NAME');
@@ -36,7 +36,7 @@ final class AppConfig with ConfigExtractor {
     dbUser = getString(env, 'DB_USER');
     dbPassword = getString(env, 'DB_PASSWORD');
 
-    supabase = SupabaseConfig(env);
+    supabase = SupabaseConfig._init(env);
   }
 
   late final String dbName;
@@ -48,10 +48,10 @@ final class AppConfig with ConfigExtractor {
   late final SupabaseConfig supabase;
 }
 
-final class SupabaseConfig with ConfigExtractor {
+final class SupabaseConfig with _ConfigExtractor {
   static SupabaseConfig? _instance;
 
-  factory SupabaseConfig(DotEnv env) {
+  factory SupabaseConfig._init(DotEnv env) {
     _instance ??= SupabaseConfig._(env);
     return _instance!;
   }
