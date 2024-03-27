@@ -15,50 +15,40 @@ extension DotEnvExt on DotEnv {
   }
 }
 
-final class AppConfig {
-  static AppConfig? _instance;
+sealed class AppConfig {
+  static final _env = DotEnv(includePlatformEnvironment: true)..load();
 
-  factory AppConfig() {
-    _instance ??= AppConfig.init();
-    return _instance!;
-  }
+  static final String dbName = _env.getOrThrow(
+    'DB_NAME',
+  );
 
-  AppConfig.init() {
-    final env = DotEnv(includePlatformEnvironment: true)..load();
+  static final String dbHost = _env.getOrThrow(
+    'DB_HOST',
+  );
 
-    dbName = env.getOrThrow('DB_NAME');
-    dbHost = env.getOrThrow('DB_HOST');
-    dbPort = int.parse(env.getOrThrow('DB_PORT'));
-    dbUser = env.getOrThrow('DB_USER');
-    dbPassword = env.getOrThrow('DB_PASSWORD');
+  static final int dbPort = int.parse(
+    _env.getOrThrow(
+      'DB_PORT',
+    ),
+  );
 
-    supabase = SupabaseConfig._init(env);
-  }
+  static final String dbUser = _env.getOrThrow(
+    'DB_USER',
+  );
 
-  late final String dbName;
-  late final String dbHost;
-  late final int dbPort;
-  late final String dbUser;
-  late final String dbPassword;
+  static final String dbPassword = _env.getOrThrow(
+    'DB_PASSWORD',
+  );
 
-  late final SupabaseConfig supabase;
-}
+  static final String supabaseUrl = _env.getOrThrow(
+    'SUPABASE_URL',
+  );
 
-final class SupabaseConfig {
-  static SupabaseConfig? _instance;
+  static final String supabaseJwtSecret = _env.getOrThrow(
+    'SUPABASE_JWT_SECRET',
+  );
 
-  factory SupabaseConfig._init(DotEnv env) {
-    _instance ??= SupabaseConfig._(env);
-    return _instance!;
-  }
-
-  SupabaseConfig._(DotEnv env) {
-    url = env.getOrThrow('SUPABASE_URL');
-    jwtSecret = env.getOrThrow('SUPABASE_JWT_SECRET');
-    serviceRoleKey = env.getOrThrow('SUPABASE_SERVICE_ROLE_KEY');
-  }
-
-  late final String url;
-  late final String jwtSecret;
-  late final String serviceRoleKey;
+  static final String supabaseServiceRoleKey = _env.getOrThrow(
+    'SUPABASE_SERVICE_ROLE_KEY',
+  );
 }

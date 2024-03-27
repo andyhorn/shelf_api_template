@@ -54,7 +54,7 @@ class AuthClient {
   Future<AppUser> validate(String token) async {
     final jwt = JWT.tryVerify(
       token,
-      SecretKey(AppConfig().supabase.jwtSecret),
+      SecretKey(AppConfig.supabaseJwtSecret),
     );
 
     if (jwt == null) {

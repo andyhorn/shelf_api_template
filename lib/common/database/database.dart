@@ -12,14 +12,12 @@ final class Database {
   }
 
   static Endpoint _getEndpoint() {
-    final config = AppConfig();
-
     return Endpoint(
-      database: config.dbName,
-      host: config.dbHost,
-      password: config.dbPassword,
-      port: config.dbPort,
-      username: config.dbUser,
+      database: AppConfig.dbName,
+      host: AppConfig.dbHost,
+      password: AppConfig.dbPassword,
+      port: AppConfig.dbPort,
+      username: AppConfig.dbUser,
     );
   }
 

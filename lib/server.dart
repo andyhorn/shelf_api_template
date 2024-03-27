@@ -50,8 +50,8 @@ class Server {
           return db;
         }))
         .addMiddleware(useValue(SupabaseClient(
-          AppConfig().supabase.url,
-          AppConfig().supabase.serviceRoleKey,
+          AppConfig.supabaseUrl,
+          AppConfig.supabaseServiceRoleKey,
         )))
         .addMiddleware(useFactory((request) async {
           final client = await request.get<SupabaseClient>();
