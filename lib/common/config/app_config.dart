@@ -9,17 +9,13 @@ class _MissingConfigValueError extends Error {
   String toString() => 'Missing config value for key: $key';
 }
 
-mixin _ConfigExtractor {
-  String getString(DotEnv env, String key) {
-    return env.getOrElse(key, () => throw _MissingConfigValueError(key));
-  }
-
-  int getInt(DotEnv env, String key) {
-    return int.parse(getString(env, key));
+extension DotEnvExt on DotEnv {
+  String getOrThrow(String key) {
+    return getOrElse(key, () => throw _MissingConfigValueError(key));
   }
 }
 
-final class AppConfig with _ConfigExtractor {
+final class AppConfig {
   static AppConfig? _instance;
 
   factory AppConfig() {
@@ -30,11 +26,11 @@ final class AppConfig with _ConfigExtractor {
   AppConfig.init() {
     final env = DotEnv(includePlatformEnvironment: true)..load();
 
-    dbName = getString(env, 'DB_NAME');
-    dbHost = getString(env, 'DB_HOST');
-    dbPort = getInt(env, 'DB_PORT');
-    dbUser = getString(env, 'DB_USER');
-    dbPassword = getString(env, 'DB_PASSWORD');
+    dbName = env.getOrThrow('DB_NAME');
+    dbHost = env.getOrThrow('DB_HOST');
+    dbPort = int.parse(env.getOrThrow('DB_PORT'));
+    dbUser = env.getOrThrow('DB_USER');
+    dbPassword = env.getOrThrow('DB_PASSWORD');
 
     supabase = SupabaseConfig._init(env);
   }
@@ -48,7 +44,7 @@ final class AppConfig with _ConfigExtractor {
   late final SupabaseConfig supabase;
 }
 
-final class SupabaseConfig with _ConfigExtractor {
+final class SupabaseConfig {
   static SupabaseConfig? _instance;
 
   factory SupabaseConfig._init(DotEnv env) {
@@ -57,9 +53,9 @@ final class SupabaseConfig with _ConfigExtractor {
   }
 
   SupabaseConfig._(DotEnv env) {
-    url = getString(env, 'SUPABASE_URL');
-    jwtSecret = getString(env, 'SUPABASE_JWT_SECRET');
-    serviceRoleKey = getString(env, 'SUPABASE_SERVICE_ROLE_KEY');
+    url = env.getOrThrow('SUPABASE_URL');
+    jwtSecret = env.getOrThrow('SUPABASE_JWT_SECRET');
+    serviceRoleKey = env.getOrThrow('SUPABASE_SERVICE_ROLE_KEY');
   }
 
   late final String url;
