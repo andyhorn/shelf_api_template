@@ -2,8 +2,12 @@ import 'dart:convert';
 
 import 'package:shelf/shelf.dart';
 
-sealed class AppError extends Error {
-  AppError(this.code, this.message);
+abstract base class AppError extends Error {
+  AppError({
+    required this.code,
+    required this.message,
+  });
+
   final String code;
   final String message;
 
@@ -15,11 +19,11 @@ sealed class AppError extends Error {
       };
 }
 
-class UnknownError extends AppError {
+final class UnknownError extends AppError {
   UnknownError(Object error)
       : super(
-          'unknown-error',
-          '$error',
+          code: 'unknown-error',
+          message: '$error',
         );
 
   @override
@@ -28,11 +32,11 @@ class UnknownError extends AppError {
   }
 }
 
-class InvalidTokenError extends AppError {
+final class InvalidTokenError extends AppError {
   InvalidTokenError()
       : super(
-          'invalid-token',
-          'The JWT is invalid.',
+          code: 'invalid-token',
+          message: 'The JWT is invalid.',
         );
 
   @override
@@ -41,11 +45,11 @@ class InvalidTokenError extends AppError {
   }
 }
 
-class InvalidRefreshTokenError extends AppError {
+final class InvalidRefreshTokenError extends AppError {
   InvalidRefreshTokenError()
       : super(
-          'invalid-refresh-token',
-          'The refresh token is invalid.',
+          code: 'invalid-refresh-token',
+          message: 'The refresh token is invalid.',
         );
 
   @override
@@ -54,11 +58,11 @@ class InvalidRefreshTokenError extends AppError {
   }
 }
 
-class InvalidLoginError extends AppError {
+final class InvalidLoginError extends AppError {
   InvalidLoginError()
       : super(
-          'invalid-login',
-          'The email or password are incorrect.',
+          code: 'invalid-login',
+          message: 'The email or password are incorrect.',
         );
 
   @override
@@ -67,11 +71,11 @@ class InvalidLoginError extends AppError {
   }
 }
 
-class UserNotFoundError extends AppError {
+final class UserNotFoundError extends AppError {
   UserNotFoundError()
       : super(
-          'user-not-found',
-          'The user was not found.',
+          code: 'user-not-found',
+          message: 'The user was not found.',
         );
 
   @override
@@ -80,11 +84,11 @@ class UserNotFoundError extends AppError {
   }
 }
 
-class EmailInUseError extends AppError {
+final class EmailInUseError extends AppError {
   EmailInUseError()
       : super(
-          'email-in-use',
-          'The email is already in use.',
+          code: 'email-in-use',
+          message: 'The email is already in use.',
         );
 
   @override
@@ -93,11 +97,11 @@ class EmailInUseError extends AppError {
   }
 }
 
-class BadMultipleError extends AppError {
+final class BadMultipleError extends AppError {
   BadMultipleError()
       : super(
-          'bad-multiple',
-          'The email and phone number are invalid.',
+          code: 'bad-multiple',
+          message: 'The email and phone number are invalid.',
         );
 
   @override
@@ -106,11 +110,11 @@ class BadMultipleError extends AppError {
   }
 }
 
-class EmailNotConfirmedError extends AppError {
+final class EmailNotConfirmedError extends AppError {
   EmailNotConfirmedError()
       : super(
-          'email-not-confirmed',
-          'The email is not confirmed.',
+          code: 'email-not-confirmed',
+          message: 'The email is not confirmed.',
         );
 
   @override
@@ -119,11 +123,11 @@ class EmailNotConfirmedError extends AppError {
   }
 }
 
-class BadPhoneNumberError extends AppError {
+final class BadPhoneNumberError extends AppError {
   BadPhoneNumberError()
       : super(
-          'bad-phone-number',
-          'The phone number is invalid.',
+          code: 'bad-phone-number',
+          message: 'The phone number is invalid.',
         );
 
   @override
@@ -132,11 +136,11 @@ class BadPhoneNumberError extends AppError {
   }
 }
 
-class BadEmailAddressError extends AppError {
+final class BadEmailAddressError extends AppError {
   BadEmailAddressError()
       : super(
-          'bad-email-address',
-          'The email address is invalid.',
+          code: 'bad-email-address',
+          message: 'The email address is invalid.',
         );
 
   @override
@@ -145,11 +149,11 @@ class BadEmailAddressError extends AppError {
   }
 }
 
-class TooManyRequestsError extends AppError {
+final class TooManyRequestsError extends AppError {
   TooManyRequestsError()
       : super(
-          'too-many-requests',
-          'Too many requests.',
+          code: 'too-many-requests',
+          message: 'Too many requests.',
         );
 
   @override
@@ -158,11 +162,11 @@ class TooManyRequestsError extends AppError {
   }
 }
 
-class RegistrationError extends AppError {
+final class RegistrationError extends AppError {
   RegistrationError()
       : super(
-          'registration-error',
-          'Failed to register the user',
+          code: 'registration-error',
+          message: 'Failed to register the user',
         );
 
   @override
@@ -171,11 +175,11 @@ class RegistrationError extends AppError {
   }
 }
 
-class LoginError extends AppError {
+final class LoginError extends AppError {
   LoginError()
       : super(
-          'login-error',
-          'Failed to sign in',
+          code: 'login-error',
+          message: 'Failed to sign in',
         );
 
   @override
@@ -184,11 +188,11 @@ class LoginError extends AppError {
   }
 }
 
-class InvalidGrantTypeError extends AppError {
+final class InvalidGrantTypeError extends AppError {
   InvalidGrantTypeError()
       : super(
-          'invalid-grant-type',
-          'Invalid grant type',
+          code: 'invalid-grant-type',
+          message: 'Invalid grant type',
         );
 
   @override
