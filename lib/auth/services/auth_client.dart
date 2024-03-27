@@ -72,16 +72,20 @@ class AuthClient {
   }
 
   Future<AppUser?> findById(String userId) async {
-    final response = await _supabase.auth.admin.getUserById(userId);
-    final user = response.user;
-    if (user == null) {
-      return null;
-    }
+    try {
+      final response = await _supabase.auth.admin.getUserById(userId);
+      final user = response.user;
+      if (user == null) {
+        return null;
+      }
 
-    return AppUser(
-      id: user.id,
-      email: user.email!,
-    );
+      return AppUser(
+        id: user.id,
+        email: user.email!,
+      );
+    } on AuthException catch (e) {
+      throw e.toAppError();
+    }
   }
 
   Future<AuthTokens> refresh(String refreshToken) async {
